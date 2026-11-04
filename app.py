@@ -9,9 +9,22 @@ Tab 3  About         -> how the models were built
 Data: Kaggle "Bank Marketing" and "Mall Customer Segmentation Data".
 Run:  streamlit run app.py
 """
+import warnings
 import joblib
 import pandas as pd
 import streamlit as st
+import sklearn.compose._column_transformer as _ct
+from sklearn.exceptions import InconsistentVersionWarning
+
+# Compatibility fix: scikit-learn >= 1.7 removed _RemainderColsList, causing unpickling errors
+# when loading ColumnTransformer pipelines trained on scikit-learn <= 1.6.
+if not hasattr(_ct, "_RemainderColsList"):
+    class _RemainderColsList(list):
+        pass
+
+    _ct._RemainderColsList = _RemainderColsList
+
+warnings.filterwarnings("ignore", category=InconsistentVersionWarning)
 
 # ---------- STEP 1: page title ----------
 st.set_page_config(page_title="Smart Savings", page_icon="💰", layout="wide")
